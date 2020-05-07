@@ -1,1 +1,1 @@
-from .kakao import *
+from apps.auth.views.kakao import *
