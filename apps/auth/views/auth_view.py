@@ -1,8 +1,8 @@
 from flask import Blueprint, jsonify, request
 from marshmallow import ValidationError
 
-from apps.auth.schemas import KakaoRequestSchema
-from apps.auth.usecases import KakaoAuthUseCase
+from apps.auth.schemas import KakaoRequestSchema, FaceBookRequestSchema
+from apps.auth.usecases import KakaoAuthUseCase, FaceBookUseCase
 
 auth = Blueprint('auth', __name__)
 
@@ -21,5 +21,12 @@ def kakao():
 
 @auth.route('/facebook', methods=['GET'])
 def facebook():
-    return jsonify({'status': True})
+    try:
+        validator = FaceBookRequestSchema().load(data=request.args)
+    except ValidationError:
+        raise Exception
+
+    token = FaceBookUseCase().execute(**validator)
+
+    return jsonify({'token': token})
 
