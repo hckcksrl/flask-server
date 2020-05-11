@@ -1,11 +1,7 @@
 import json
 import os
 from dataclasses import dataclass
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CONFIG_SETTINGS_COMMON_FILE = os.path.join(BASE_DIR, '../../.config/config.json')
-config_secret = json.loads(open(CONFIG_SETTINGS_COMMON_FILE).read())
-
+from settings import config_secret
 
 @dataclass
 class FaceBook:

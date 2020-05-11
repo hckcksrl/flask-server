@@ -11,6 +11,8 @@ marshmallow = "*"
 pyjwt = "*"
 requests = "*"
 sqlalchemy = "*"
+pymysql = "*"
+alembic = "*"
 
 [requires]
 python_version = "3.7"

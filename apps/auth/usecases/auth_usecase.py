@@ -1,11 +1,12 @@
 import requests
 
 from apps.auth.helpers import Kakao, JsonToken, FaceBook
+from apps.auth.repositories import AuthRepository
 
 
 class AuthUseCase:
     def __init__(self):
-        pass
+        self.repository = AuthRepository()
 
 
 class KakaoAuthUseCase(AuthUseCase):
@@ -37,8 +38,27 @@ class KakaoAuthUseCase(AuthUseCase):
             headers=header
         ).json()
 
+        auth = self.repository.get_auth(id=response.get('id'), social='kakao')
+
+        if auth:
+            self.repository.update_auth(
+                access_token=access_token,
+                id=response.get('id'),
+                email=response.get('kakao_account').get('email'),
+                social='kakao',
+                username=response.get('properties').get('nickname')
+            )
+        else:
+            auth =self.repository.create_auth(
+                access_token=access_token,
+                id=response.get('id'),
+                email=response.get('kakao_account').get('email'),
+                social='kakao',
+                username=response.get('properties').get('nickname')
+            )
+
         token = JsonToken().encode(
-            payload={"id": response.get('id')}
+            payload={"id": auth.id}
         )
 
         return token.decode('utf-8')
@@ -71,8 +91,27 @@ class FaceBookUseCase(AuthUseCase):
             },
         ).json()
 
+        auth = self.repository.get_auth(id=response.get('id'), social='facebook')
+
+        if auth:
+            self.repository.update_auth(
+                access_token=access_token,
+                id=response.get('id'),
+                email=response.get('email'),
+                social='facebook',
+                username=response.get('name')
+            )
+        else:
+            auth = self.repository.create_auth(
+                access_token=access_token,
+                id=response.get('id'),
+                email=response.get('email'),
+                social='facebook',
+                username=response.get('name')
+            )
+
         token = JsonToken().encode(
-            payload={"id": response['id']}
+            payload={"id": auth.id}
         )
 
         return token.decode('utf-8')
